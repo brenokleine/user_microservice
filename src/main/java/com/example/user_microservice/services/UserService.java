@@ -29,14 +29,8 @@ public class UserService {
         userRepository.deleteById(userId);
     }
 
-//    public UserModel updateUser(UUID userId, UserModel userModel) {
-//        UserModel existingUser = userRepository.findById(userId).orElse(null);
-//        if (existingUser != null) {
-//            existingUser.setName(userModel.getName());
-//            existingUser.setEmail(userModel.getEmail());
-//            return userRepository.save(existingUser);
-//        }
-//        return null;
-//    }
+    public UserModel getUserByEmail(String email) {
+        return userRepository.findByEmail(email);
+    }
 
 }

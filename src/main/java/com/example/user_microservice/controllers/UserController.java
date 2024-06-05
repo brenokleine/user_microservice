@@ -21,15 +21,24 @@ public class UserController {
     UserService userService;
 
     @PostMapping("/users")
-    public ResponseEntity<UserModel> saveUser(@RequestBody @Valid UserRecordDto userRecordDto) {
+    public ResponseEntity<?> saveUser(@RequestBody @Valid UserRecordDto userRecordDto) {
 
         // Create a new UserModel object with the data from the UserRecordDto object
         UserModel userModel = new UserModel();
         BeanUtils.copyProperties(userRecordDto, userModel);
 
-        UserModel savedUser = userService.saveUser(userModel);
+        try{
+            UserModel existingUser = userService.getUserByEmail(userModel.getEmail());
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(savedUser);
+            if(existingUser != null){
+                return ResponseEntity.status(HttpStatus.CONFLICT).body("User with email " + userModel.getEmail() + " already exists.");
+            } else {
+                UserModel savedUser = userService.saveUser(userModel);
+                return ResponseEntity.status(HttpStatus.CREATED).body(savedUser);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
     }
-
 }
